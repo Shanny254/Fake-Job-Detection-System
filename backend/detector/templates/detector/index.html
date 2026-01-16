@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fake Job Detector</title>
+</head>
+<body>
+    <h1>Fake Job Detector</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="job_text" rows="10" cols="80" placeholder="Paste job description here..."></textarea>
+        <br><br>
+        <button type="submit">Check Job</button>
+    </form>
+
+    {% if result %}
+        <h2>Result</h2>
+        <p><strong>Fraudulent:</strong> {{ result.fraudulent }}</p>
+        <p><strong>Fraud Probability:</strong> {{ result.fraud_probability }}</p>
+    {% endif %}
+</body>
+</html>
