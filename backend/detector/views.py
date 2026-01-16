@@ -32,3 +32,23 @@ def predict_fraud(request):
         "fraudulent": prediction,
         "fraud_probability": round(probability, 3)
     })
+
+from django.shortcuts import render
+
+def home(request):
+    result = None
+
+    if request.method == "POST":
+        text = request.POST.get("job_text", "").strip()
+
+        if text:
+            X = vectorizer.transform([text])
+            prediction = int(model.predict(X)[0])
+            probability = float(model.predict_proba(X)[0][1])
+
+            result = {
+                "fraudulent": prediction,
+                "fraud_probability": round(probability, 3)
+            }
+
+    return render(request, "detector/index.html", {"result": result})
