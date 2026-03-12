@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>History</title>
+</head>
+
+<body style="background:#0B0F1A;color:white;font-family:Arial">
+
+<h1>Analysis History</h1>
+
+<table border="1" cellpadding="10">
+
+<tr>
+<th>Job Text</th>
+<th>Fraudulent</th>
+<th>Probability</th>
+</tr>
+
+{% for job in jobs %}
+
+<tr>
+
+<td>{{job.job_text|truncatewords:15}}</td>
+
+<td>
+{% if job.fraudulent == 1 %}
+Fake
+{% else %}
+Real
+{% endif %}
+</td>
+
+<td>{{job.probability}}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>
