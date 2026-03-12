@@ -1,23 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Fake Job Detector</title>
+
+<title>Fake Job Detection System</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0B0F1A;
+color:#E2E8F0;
+}
+
+.container{
+display:flex;
+height:100vh;
+}
+
+.sidebar{
+width:240px;
+background:#111827;
+padding:20px;
+}
+
+.sidebar h2{
+color:#00C9A7;
+}
+
+.sidebar a{
+display:block;
+color:#E2E8F0;
+padding:10px 0;
+text-decoration:none;
+}
+
+.sidebar a:hover{
+color:#00C9A7;
+}
+
+.main{
+flex:1;
+padding:40px;
+}
+
+.card{
+background:#1A2235;
+padding:25px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+textarea{
+width:100%;
+height:180px;
+padding:10px;
+background:#0B0F1A;
+color:white;
+border:1px solid #1E2D42;
+border-radius:6px;
+}
+
+button{
+margin-top:15px;
+padding:12px 20px;
+background:#00C9A7;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:16px;
+}
+
+button:hover{
+background:#00b294;
+}
+
+.result{
+margin-top:15px;
+padding:15px;
+border-radius:6px;
+}
+
+.fake{
+background:#EF444420;
+border:1px solid #EF4444;
+}
+
+.real{
+background:#10B98120;
+border:1px solid #10B981;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #1E2D42;
+}
+
+</style>
+
 </head>
+
 <body>
-    <h1>Fake Job Detector</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        <textarea name="job_text" rows="10" cols="80" placeholder="Paste job description here..."></textarea>
-        <br><br>
-        <button type="submit">Check Job</button>
-    </form>
+<div class="container">
 
-    {% if result %}
-        <h2>Result</h2>
-        <p><strong>Fraudulent:</strong> {{ result.fraudulent }}</p>
-        <p><strong>Fraud Probability:</strong> {{ result.fraud_probability }}</p>
-    {% endif %}
+<div class="sidebar">
+
+<h2>FJDS</h2>
+
+<a href="/">Dashboard</a>
+<a href="/analyze/">Analyze Job</a>
+<a href="/history/">History</a>
+<a href="/analytics/">Analytics</a>
+<a href="/admin/">Admin</a>
+
+</div>
+
+
+<div class="main">
+
+<h1>Fake Job Detection System</h1>
+
+
+<div class="card">
+
+<form method="post">
+
+{% csrf_token %}
+
+<textarea name="job_text" placeholder="Paste job description here..."></textarea>
+
+<br>
+
+<button type="submit">Analyze Job</button>
+
+</form>
+
+{% if error %}
+<p style="color:#EF4444">{{error}}</p>
+{% endif %}
+
+
+{% if result %}
+
+<div class="result {% if result.fraudulent == 1 %}fake{% else %}real{% endif %}">
+
+<h3>Analysis Result</h3>
+
+<p>
+<strong>Fraudulent:</strong>
+{% if result.fraudulent == 1 %}
+Fake Job
+{% else %}
+Legitimate Job
+{% endif %}
+</p>
+
+<p>
+<strong>Fraud Probability:</strong>
+{{result.fraud_probability}}
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+
+
+<div class="card">
+
+<h2>Recent Checks</h2>
+
+<table>
+
+<tr>
+<th>Job Text</th>
+<th>Fraudulent</th>
+<th>Probability</th>
+</tr>
+
+{% for job in history %}
+
+<tr>
+
+<td>{{job.job_text|truncatewords:12}}</td>
+
+<td>
+{% if job.fraudulent == 1 %}
+<span style="color:#EF4444">Fake</span>
+{% else %}
+<span style="color:#10B981">Real</span>
+{% endif %}
+</td>
+
+<td>{{job.probability}}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
 </body>
 </html>
