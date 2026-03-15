@@ -290,7 +290,7 @@
 <div class="quick-stats">
     <div class="quick-stat-card">
         <h4>Average Per User</h4>
-        <div class="value">{% if total_users > 0 %}{{ total_jobs|div:total_users|floatformat:1 }}{% else %}0{% endif %}</div>
+        <div class="value">{{ avg_per_user }}</div>
         <p>Analyses per user</p>
     </div>
     <div class="quick-stat-card" style="border-left-color: #10b981;">
