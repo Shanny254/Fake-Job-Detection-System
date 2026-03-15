@@ -17,7 +17,6 @@
             min-height: 100vh;
             display: flex;
             position: relative;
-            overflow: hidden;
         }
 
         .background-gradient {
@@ -38,6 +37,7 @@
             margin: auto;
             position: relative;
             z-index: 1;
+            padding: 20px 0;
         }
 
         .left-section {
@@ -107,6 +107,8 @@
             align-items: center;
             justify-content: center;
             padding: 40px;
+            overflow-y: auto;
+            max-height: 100vh;
         }
 
         .signup-card {
@@ -114,13 +116,14 @@
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            padding: 45px;
+            padding: 40px;
             width: 100%;
             max-width: 420px;
+            margin: auto;
         }
 
         .signup-header {
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .signup-header h2 {
@@ -136,7 +139,7 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
@@ -149,7 +152,7 @@
 
         .form-group input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 14px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -216,6 +219,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
         }
 
         .signup-button:hover {
@@ -225,7 +229,7 @@
 
         .divider {
             text-align: center;
-            margin: 25px 0;
+            margin: 20px 0;
             position: relative;
         }
 
@@ -249,7 +253,8 @@
 
         .login-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
+            padding-bottom: 10px;
         }
 
         .login-link a {
@@ -275,6 +280,7 @@
             .right-section {
                 flex: 1;
                 padding: 20px;
+                max-height: none;
             }
 
             .features {
