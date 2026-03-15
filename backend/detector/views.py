@@ -194,8 +194,12 @@ def home(request):
 
 @login_required
 def dashboard(request):
-    """Personal Dashboard - User's own statistics"""
-    # Users see only their own data
+    """Personal Dashboard - User's own statistics OR Admin Dashboard"""
+    # Redirect admins to admin dashboard
+    if request.user.is_superuser:
+        return redirect("admin_dashboard")
+    
+    # Regular users see only their own data
     total = JobAnalysis.objects.filter(submitted_by=request.user).count()
     fake = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=1).count()
     real = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=0).count()
@@ -212,10 +216,53 @@ def dashboard(request):
 
 
 @login_required
+def admin_dashboard(request):
+    """Admin Dashboard - System Overview and User Management"""
+    # Redirect non-admins
+    if not request.user.is_superuser:
+        return redirect("dashboard")
+    
+    # System-wide statistics
+    total_jobs = JobAnalysis.objects.count()
+    fake_jobs = JobAnalysis.objects.filter(fraudulent=1).count()
+    real_jobs = JobAnalysis.objects.filter(fraudulent=0).count()
+    
+    # User statistics
+    total_users = User.objects.count()
+    admin_users = User.objects.filter(is_superuser=True).count()
+    regular_users = User.objects.filter(is_superuser=False).count()
+    
+    # Recent activity
+    recent_analyses = JobAnalysis.objects.select_related('submitted_by').order_by('-id')[:10]
+    
+    # All users
+    all_users = User.objects.all().order_by('-date_joined')
+    
+    return render(
+        request,
+        "detector/admin_dashboard.html",
+        {
+            "total_jobs": total_jobs,
+            "fake_jobs": fake_jobs,
+            "real_jobs": real_jobs,
+            "total_users": total_users,
+            "admin_users": admin_users,
+            "regular_users": regular_users,
+            "recent_analyses": recent_analyses,
+            "all_users": all_users
+        }
+    )
+
+
+@login_required
 def history(request):
-    """History page - User's own analyzed jobs"""
-    # Users see only their own jobs
-    jobs = JobAnalysis.objects.filter(submitted_by=request.user).order_by("-id")
+    """History page - User's own analyzed jobs OR All jobs for admin"""
+    # Admin sees all jobs
+    if request.user.is_superuser:
+        jobs = JobAnalysis.objects.select_related('submitted_by').order_by("-id")
+    else:
+        # Users see only their own jobs
+        jobs = JobAnalysis.objects.filter(submitted_by=request.user).order_by("-id")
 
     return render(
         request,
@@ -265,7 +312,11 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-            return redirect("analyze")
+            # Redirect based on user type
+            if user.is_superuser:
+                return redirect("admin_dashboard")
+            else:
+                return redirect("analyze")
         else:
             error = "Invalid username or password"
     
