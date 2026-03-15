@@ -1,7 +1,13 @@
 from django.urls import path
-from .views import predict_fraud, home
+from . import views
 
 urlpatterns = [
-    path("", home),
-    path("predict/", predict_fraud),
+    path("", views.login_view, name="login"),
+    path("signup/", views.signup_view, name="signup"),
+    path("logout/", views.logout_view, name="logout"),
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("analyze/", views.home, name="analyze"),
+    path("history/", views.history, name="history"),
+    path("analytics/", views.analytics, name="analytics"),
+    path("api/predict/", views.predict_fraud),
 ]
