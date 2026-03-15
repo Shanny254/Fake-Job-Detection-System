@@ -190,10 +190,17 @@
     <nav class="navbar">
         <div class="navbar-brand">FJDS</div>
         <div class="navbar-menu">
-            <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}">Analyze Job</a>
-            <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">My Dashboard</a>
-            <a href="{% url 'history' %}" class="nav-link {% if request.resolver_match.url_name == 'history' %}active{% endif %}">My History</a>
-            <a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">Global Analytics</a>
+            {% if request.user.is_superuser %}
+                <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">Admin Dashboard</a>
+                <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}">Analyze Job</a>
+                <a href="{% url 'history' %}" class="nav-link {% if request.resolver_match.url_name == 'history' %}active{% endif %}">All Analyses</a>
+                <a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">Global Analytics</a>
+            {% else %}
+                <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}">Analyze Job</a>
+                <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">My Dashboard</a>
+                <a href="{% url 'history' %}" class="nav-link {% if request.resolver_match.url_name == 'history' %}active{% endif %}">My History</a>
+                <a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">Global Analytics</a>
+            {% endif %}
             <div class="user-info">
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
                     <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
