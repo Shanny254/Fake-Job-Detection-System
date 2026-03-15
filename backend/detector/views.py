@@ -194,16 +194,11 @@ def home(request):
 
 @login_required
 def dashboard(request):
-    """Dashboard with statistics"""
-    # Admin sees all data, users see only their own
-    if request.user.is_superuser:
-        total = JobAnalysis.objects.count()
-        fake = JobAnalysis.objects.filter(fraudulent=1).count()
-        real = JobAnalysis.objects.filter(fraudulent=0).count()
-    else:
-        total = JobAnalysis.objects.filter(submitted_by=request.user).count()
-        fake = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=1).count()
-        real = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=0).count()
+    """Personal Dashboard - User's own statistics"""
+    # Users see only their own data
+    total = JobAnalysis.objects.filter(submitted_by=request.user).count()
+    fake = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=1).count()
+    real = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=0).count()
 
     return render(
         request,
@@ -218,12 +213,9 @@ def dashboard(request):
 
 @login_required
 def history(request):
-    """History page showing all analyzed jobs"""
-    # Admin sees all, users see only their own
-    if request.user.is_superuser:
-        jobs = JobAnalysis.objects.order_by("-id")
-    else:
-        jobs = JobAnalysis.objects.filter(submitted_by=request.user).order_by("-id")
+    """History page - User's own analyzed jobs"""
+    # Users see only their own jobs
+    jobs = JobAnalysis.objects.filter(submitted_by=request.user).order_by("-id")
 
     return render(
         request,
@@ -236,21 +228,27 @@ def history(request):
 
 @login_required
 def analytics(request):
-    """Analytics page with charts data"""
-    # Admin sees all data, users see only their own
-    if request.user.is_superuser:
-        fake = JobAnalysis.objects.filter(fraudulent=1).count()
-        real = JobAnalysis.objects.filter(fraudulent=0).count()
-    else:
-        fake = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=1).count()
-        real = JobAnalysis.objects.filter(submitted_by=request.user, fraudulent=0).count()
+    """Global Analytics - Platform-wide statistics (everyone sees same data)"""
+    # GLOBAL STATS - All users combined
+    total_global = JobAnalysis.objects.count()
+    fake_global = JobAnalysis.objects.filter(fraudulent=1).count()
+    real_global = JobAnalysis.objects.filter(fraudulent=0).count()
+    
+    # Total users who have analyzed jobs
+    total_users = JobAnalysis.objects.values('submitted_by').distinct().count()
+    
+    # Calculate fraud rate
+    fraud_rate = round((fake_global / total_global * 100) if total_global > 0 else 0, 1)
 
     return render(
         request,
         "detector/analytics.html",
         {
-            "fake": fake,
-            "real": real
+            "fake": fake_global,
+            "real": real_global,
+            "total": total_global,
+            "total_users": total_users,
+            "fraud_rate": fraud_rate
         }
     )
 
