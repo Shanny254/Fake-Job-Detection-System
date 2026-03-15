@@ -1,218 +1,276 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends 'detector/base.html' %}
 
-<title>Fake Job Detection System</title>
+{% block title %}Analyze Job - FJDS{% endblock %}
 
+{% block extra_css %}
 <style>
+    .form-card {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+    }
 
-body{
-margin:0;
-font-family:Arial;
-background:#0B0F1A;
-color:#E2E8F0;
-}
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-.container{
-display:flex;
-height:100vh;
-}
+    .form-group label {
+        display: block;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
 
-.sidebar{
-width:240px;
-background:#111827;
-padding:20px;
-}
+    .form-group textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 200px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        transition: border-color 0.3s;
+    }
 
-.sidebar h2{
-color:#00C9A7;
-}
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
 
-.sidebar a{
-display:block;
-color:#E2E8F0;
-padding:10px 0;
-text-decoration:none;
-}
+    .analyze-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
 
-.sidebar a:hover{
-color:#00C9A7;
-}
+    .analyze-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
 
-.main{
-flex:1;
-padding:40px;
-}
+    .error-message {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
 
-.card{
-background:#1A2235;
-padding:25px;
-border-radius:10px;
-margin-bottom:20px;
-}
+    .result-card {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+    }
 
-textarea{
-width:100%;
-height:180px;
-padding:10px;
-background:#0B0F1A;
-color:white;
-border:1px solid #1E2D42;
-border-radius:6px;
-}
+    .result-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
 
-button{
-margin-top:15px;
-padding:12px 20px;
-background:#00C9A7;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-size:16px;
-}
+    .result-badge {
+        display: inline-block;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
 
-button:hover{
-background:#00b294;
-}
+    .result-badge.fake {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 2px solid #ef4444;
+    }
 
-.result{
-margin-top:15px;
-padding:15px;
-border-radius:6px;
-}
+    .result-badge.legit {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 2px solid #10b981;
+    }
 
-.fake{
-background:#EF444420;
-border:1px solid #EF4444;
-}
+    .result-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
 
-.real{
-background:#10B98120;
-border:1px solid #10B981;
-}
+    .detail-item {
+        text-align: center;
+        padding: 15px;
+        background: var(--bg-secondary);
+        border-radius: 8px;
+    }
 
-table{
-width:100%;
-border-collapse:collapse;
-}
+    .detail-item label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 12px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
 
-th,td{
-padding:10px;
-border-bottom:1px solid #1E2D42;
-}
+    .detail-item .value {
+        font-size: 32px;
+        font-weight: bold;
+        color: var(--text-primary);
+    }
 
+    .history-section {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+    }
+
+    .history-section h3 {
+        color: var(--text-primary);
+        margin-bottom: 20px;
+    }
+
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .history-table th {
+        background: var(--bg-secondary);
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .history-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .status-badge.fake {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .status-badge.legit {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
 </style>
+{% endblock %}
 
-</head>
-
-<body>
-
-<div class="container">
-
-<div class="sidebar">
-
-<h2>FJDS</h2>
-
-<a href="/">Dashboard</a>
-<a href="/analyze/">Analyze Job</a>
-<a href="/history/">History</a>
-<a href="/analytics/">Analytics</a>
-<a href="/admin/">Admin</a>
-
+{% block content %}
+<div class="page-header">
+    <h1>Analyze Job Posting</h1>
+    <p>Paste a job description below to detect if it's fraudulent or legitimate</p>
 </div>
-
-
-<div class="main">
-
-<h1>Fake Job Detection System</h1>
-
-
-<div class="card">
-
-<form method="post">
-
-{% csrf_token %}
-
-<textarea name="job_text" placeholder="Paste job description here..."></textarea>
-
-<br>
-
-<button type="submit">Analyze Job</button>
-
-</form>
 
 {% if error %}
-<p style="color:#EF4444">{{error}}</p>
+<div class="error-message">
+    {{ error }}
+</div>
 {% endif %}
-
 
 {% if result %}
-
-<div class="result {% if result.fraudulent == 1 %}fake{% else %}real{% endif %}">
-
-<h3>Analysis Result</h3>
-
-<p>
-<strong>Fraudulent:</strong>
-{% if result.fraudulent == 1 %}
-Fake Job
-{% else %}
-Legitimate Job
+<div class="result-card">
+    <div class="result-header">
+        <h2>Analysis Result</h2>
+        {% if result.fraudulent == 1 %}
+        <div class="result-badge fake">FRAUDULENT JOB</div>
+        {% else %}
+        <div class="result-badge legit">LEGITIMATE JOB</div>
+        {% endif %}
+    </div>
+    <div class="result-details">
+        <div class="detail-item">
+            <label>Fraud Probability</label>
+            <div class="value" style="color: {% if result.fraudulent == 1 %}#ef4444{% else %}#10b981{% endif %}">
+                {{ result.fraud_probability|floatformat:3 }}
+            </div>
+        </div>
+        <div class="detail-item">
+            <label>Classification</label>
+            <div class="value" style="font-size: 20px;">
+                {% if result.fraudulent == 1 %}
+                Fake
+                {% else %}
+                Real
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}
-</p>
 
-<p>
-<strong>Fraud Probability:</strong>
-{{result.fraud_probability}}
-</p>
-
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="job_text">Job Description</label>
+            <textarea id="job_text" name="job_text" placeholder="Paste the job posting here..." required></textarea>
+        </div>
+        <button type="submit" class="analyze-btn">Analyze Job Posting</button>
+    </form>
 </div>
 
+{% if history %}
+<div class="history-section">
+    <h3>Recent Analyses</h3>
+    <table class="history-table">
+        <thead>
+            <tr>
+                <th>Job Text Preview</th>
+                <th>Probability</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in history %}
+            <tr>
+                <td>{{ job.job_text|truncatewords:10 }}</td>
+                <td>{{ job.probability|floatformat:3 }}</td>
+                <td>
+                    {% if job.fraudulent == 1 %}
+                    <span class="status-badge fake">FAKE</span>
+                    {% else %}
+                    <span class="status-badge legit">LEGIT</span>
+                    {% endif %}
+                </td>
+                <td>{{ job.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endif %}
-
-</div>
-
-
-
-<div class="card">
-
-<h2>Recent Checks</h2>
-
-<table>
-
-<tr>
-<th>Job Text</th>
-<th>Fraudulent</th>
-<th>Probability</th>
-</tr>
-
-{% for job in history %}
-
-<tr>
-
-<td>{{job.job_text|truncatewords:12}}</td>
-
-<td>
-{% if job.fraudulent == 1 %}
-<span style="color:#EF4444">Fake</span>
-{% else %}
-<span style="color:#10B981">Real</span>
-{% endif %}
-</td>
-
-<td>{{job.probability}}</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-</body>
-</html>
+{% endblock %}
