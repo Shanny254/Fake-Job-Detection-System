@@ -1,0 +1,400 @@
+{% extends 'detector/base.html' %}
+
+{% block title %}Admin Dashboard - FJDS{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        color: white;
+    }
+
+    .admin-header h1 {
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+    .admin-header p {
+        opacity: 0.9;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: var(--bg-card);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card h3 {
+        color: var(--text-secondary);
+        font-size: 12px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .stat-card .number {
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+    .stat-card.jobs .number { color: #667eea; }
+    .stat-card.fake .number { color: #ef4444; }
+    .stat-card.real .number { color: #10b981; }
+    .stat-card.users .number { color: #f59e0b; }
+    .stat-card.admins .number { color: #8b5cf6; }
+
+    .section-title {
+        color: var(--text-primary);
+        font-size: 20px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .users-table th {
+        background: var(--bg-secondary);
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .users-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+    .users-table tr:hover {
+        background: var(--bg-secondary);
+    }
+
+    .role-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .role-badge.admin {
+        background: rgba(139, 92, 246, 0.1);
+        color: #8b5cf6;
+    }
+
+    .role-badge.user {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+    .activity-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .activity-table th {
+        background: var(--bg-secondary);
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .activity-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .status-badge.fake {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .status-badge.legit {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .export-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: inline-block;
+        text-decoration: none;
+        margin-bottom: 20px;
+    }
+
+    .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .charts-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .chart-card {
+        background: var(--bg-card);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+    }
+
+    .chart-card h3 {
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <p>System overview and user management</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card jobs">
+        <h3>Total Jobs Analyzed</h3>
+        <div class="number">{{ total_jobs }}</div>
+    </div>
+    <div class="stat-card fake">
+        <h3>Fraudulent Jobs</h3>
+        <div class="number">{{ fake_jobs }}</div>
+    </div>
+    <div class="stat-card real">
+        <h3>Legitimate Jobs</h3>
+        <div class="number">{{ real_jobs }}</div>
+    </div>
+    <div class="stat-card users">
+        <h3>Total Users</h3>
+        <div class="number">{{ total_users }}</div>
+    </div>
+    <div class="stat-card admins">
+        <h3>Admin Users</h3>
+        <div class="number">{{ admin_users }}</div>
+    </div>
+    <div class="stat-card users">
+        <h3>Regular Users</h3>
+        <div class="number">{{ regular_users }}</div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>System-Wide Detection</h3>
+        <div class="chart-container">
+            <canvas id="systemChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h3>User Distribution</h3>
+        <div class="chart-container">
+            <canvas id="userChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="section-title">Recent Activity</h2>
+    {% if recent_analyses %}
+    <table class="activity-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Job Preview</th>
+                <th>Status</th>
+                <th>Probability</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for analysis in recent_analyses %}
+            <tr>
+                <td>#{{ analysis.id }}</td>
+                <td>{{ analysis.submitted_by.username|default:"Anonymous" }}</td>
+                <td>{{ analysis.job_text|truncatewords:8 }}</td>
+                <td>
+                    {% if analysis.fraudulent == 1 %}
+                    <span class="status-badge fake">FAKE</span>
+                    {% else %}
+                    <span class="status-badge legit">LEGIT</span>
+                    {% endif %}
+                </td>
+                <td>{{ analysis.probability|floatformat:3 }}</td>
+                <td>{{ analysis.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center; color: var(--text-muted); padding: 40px;">No activity yet</p>
+    {% endif %}
+</div>
+
+<div class="card" style="margin-top: 30px;">
+    <h2 class="section-title">User Management</h2>
+    <table class="users-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Date Joined</th>
+                <th>Analyses Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in all_users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.is_superuser %}
+                    <span class="role-badge admin">ADMIN</span>
+                    {% else %}
+                    <span class="role-badge user">USER</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.date_joined|date:"Y-m-d" }}</td>
+                <td>{{ user.job_analyses.count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // System Detection Chart
+    const systemCtx = document.getElementById('systemChart').getContext('2d');
+    const systemChart = new Chart(systemCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Legitimate', 'Fraudulent'],
+            datasets: [{
+                data: [{{ real_jobs }}, {{ fake_jobs }}],
+                backgroundColor: ['#10b981', '#ef4444'],
+                borderWidth: 3,
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-card')
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                    }
+                }
+            }
+        }
+    });
+
+    // User Distribution Chart
+    const userCtx = document.getElementById('userChart').getContext('2d');
+    const userChart = new Chart(userCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Regular Users', 'Admins'],
+            datasets: [{
+                data: [{{ regular_users }}, {{ admin_users }}],
+                backgroundColor: ['#3b82f6', '#8b5cf6'],
+                borderWidth: 3,
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-card')
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                    }
+                }
+            }
+        }
+    });
+
+    // Update chart colors when theme changes
+    function updateChartColors() {
+        const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card');
+        const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
+        
+        systemChart.data.datasets[0].borderColor = borderColor;
+        systemChart.options.plugins.legend.labels.color = textColor;
+        systemChart.update();
+        
+        userChart.data.datasets[0].borderColor = borderColor;
+        userChart.options.plugins.legend.labels.color = textColor;
+        userChart.update();
+    }
+
+    // Listen for theme changes
+    const observer = new MutationObserver(updateChartColors);
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+    });
+</script>
+{% endblock %}
