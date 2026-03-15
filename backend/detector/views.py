@@ -232,6 +232,9 @@ def admin_dashboard(request):
     admin_users = User.objects.filter(is_superuser=True).count()
     regular_users = User.objects.filter(is_superuser=False).count()
     
+    # Calculate average
+    avg_per_user = round(total_jobs / total_users, 1) if total_users > 0 else 0
+    
     # Recent activity
     recent_analyses = JobAnalysis.objects.select_related('submitted_by').order_by('-id')[:10]
     
@@ -248,6 +251,7 @@ def admin_dashboard(request):
             "total_users": total_users,
             "admin_users": admin_users,
             "regular_users": regular_users,
+            "avg_per_user": avg_per_user,
             "recent_analyses": recent_analyses,
             "all_users": all_users
         }
