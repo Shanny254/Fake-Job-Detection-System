@@ -5,106 +5,141 @@
 {% block extra_css %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+    .dashboard-container {
+        padding: 0;
+    }
+
     .welcome-banner {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 25px;
+        padding: 15px 20px;
         border-radius: 10px;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .welcome-banner h2 {
-        font-size: 24px;
-        margin-bottom: 5px;
+        font-size: 18px;
+        margin: 0;
     }
 
     .welcome-banner p {
         opacity: 0.9;
-        font-size: 14px;
+        font-size: 12px;
+        margin: 0;
     }
 
-    .stats-grid {
+    .stats-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 15px;
     }
 
     .stat-card {
         background: var(--bg-card);
-        padding: 25px;
-        border-radius: 10px;
+        padding: 15px;
+        border-radius: 8px;
         box-shadow: var(--shadow);
         text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
         border: 1px solid var(--border-color);
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-hover);
     }
 
     .stat-card h3 {
         color: var(--text-secondary);
-        font-size: 13px;
+        font-size: 10px;
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
         font-weight: 600;
     }
 
     .stat-card .number {
-        font-size: 42px;
+        font-size: 32px;
         font-weight: bold;
-        margin: 10px 0;
+        margin: 0;
     }
 
     .stat-card.total .number { color: #667eea; }
     .stat-card.fake .number { color: #ef4444; }
     .stat-card.real .number { color: #10b981; }
-    .stat-card.accuracy .number { color: #f59e0b; font-size: 36px; }
+    .stat-card.rate .number { color: #f59e0b; font-size: 28px; }
 
-    .charts-grid {
+    .main-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .charts-section {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        margin-bottom: 30px;
+        gap: 12px;
     }
 
     .chart-card {
         background: var(--bg-card);
-        padding: 25px;
-        border-radius: 10px;
+        padding: 15px;
+        border-radius: 8px;
         box-shadow: var(--shadow);
         border: 1px solid var(--border-color);
     }
 
-    .chart-card.full-width {
-        grid-column: 1 / -1;
-    }
-
     .chart-card h3 {
         color: var(--text-primary);
-        margin-bottom: 20px;
-        font-size: 16px;
+        margin-bottom: 10px;
+        font-size: 13px;
         font-weight: 600;
     }
 
     .chart-container {
         position: relative;
-        height: 280px;
+        height: 180px;
     }
 
-    .chart-container.medium {
-        height: 320px;
+    .insights-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .insight-card {
+        background: var(--bg-card);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #667eea;
+    }
+
+    .insight-card h4 {
+        color: var(--text-primary);
+        font-size: 12px;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .insight-card .value {
+        color: #667eea;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 3px;
+    }
+
+    .insight-card p {
+        color: var(--text-secondary);
+        font-size: 11px;
+        line-height: 1.4;
+        margin: 0;
     }
 
     .info-text {
         text-align: center;
         color: var(--text-secondary);
         font-size: 14px;
-        margin-top: 20px;
-        padding: 20px;
+        padding: 40px;
         background: var(--bg-secondary);
         border-radius: 8px;
     }
@@ -115,46 +150,20 @@
         font-weight: 600;
     }
 
-    .info-text a:hover {
-        text-decoration: underline;
+    @media (max-width: 1200px) {
+        .main-content {
+            grid-template-columns: 1fr;
+        }
+        .charts-section {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
-    .summary-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .summary-card {
-        background: var(--bg-card);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border-color);
-    }
-
-    .summary-card h4 {
-        color: var(--text-primary);
-        font-size: 15px;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .summary-card p {
-        color: var(--text-secondary);
-        font-size: 13px;
-        line-height: 1.6;
-    }
-
-    .summary-card .highlight {
-        color: #667eea;
-        font-weight: 700;
-        font-size: 18px;
-    }
-
-    @media (max-width: 968px) {
-        .charts-grid {
+    @media (max-width: 768px) {
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .charts-section {
             grid-template-columns: 1fr;
         }
     }
@@ -162,104 +171,114 @@
 {% endblock %}
 
 {% block content %}
-<div class="welcome-banner">
-    <h2>Welcome back, {{ request.user.username }}! 👋</h2>
-    <p>Here's your personal fraud detection summary and insights</p>
-</div>
-
-{% if total == 0 %}
-<div class="info-text">
-    <h3 style="color: var(--text-primary); margin-bottom: 10px;">Get Started with Your First Analysis</h3>
-    <p>You haven't analyzed any jobs yet. Head over to <a href="{% url 'analyze' %}">Analyze Job</a> to start detecting fraudulent postings!</p>
-</div>
-{% else %}
-<div class="stats-grid">
-    <div class="stat-card total">
-        <h3>Total Analyzed</h3>
-        <div class="number">{{ total }}</div>
-    </div>
-    <div class="stat-card fake">
-        <h3>Fraudulent Detected</h3>
-        <div class="number">{{ fake }}</div>
-    </div>
-    <div class="stat-card real">
-        <h3>Legitimate Found</h3>
-        <div class="number">{{ real }}</div>
-    </div>
-    <div class="stat-card accuracy">
-        <h3>Your Fraud Rate</h3>
-        <div class="number">{% widthratio fake total 100 %}%</div>
-    </div>
-</div>
-
-<div class="charts-grid">
-    <!-- Row 1: Primary Charts -->
-    <div class="chart-card">
-        <h3>📊 Your Analysis Distribution</h3>
-        <div class="chart-container">
-            <canvas id="pieChart"></canvas>
+<div class="dashboard-container">
+    <div class="welcome-banner">
+        <div>
+            <h2> Welcome back, {{ request.user.username }}!</h2>
+            <p>Your personal fraud detection dashboard</p>
         </div>
     </div>
 
-    <div class="chart-card">
-        <h3>📈 Detection Statistics</h3>
-        <div class="chart-container">
-            <canvas id="barChart"></canvas>
+    {% if total == 0 %}
+    <div class="info-text">
+        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Get Started</h3>
+        <p>You haven't analyzed any jobs yet. <a href="{% url 'analyze' %}">Analyze your first job</a> to start protecting yourself from fraud!</p>
+    </div>
+    {% else %}
+    
+    <!-- Stats Row -->
+    <div class="stats-row">
+        <div class="stat-card total">
+            <h3>Total Analyzed</h3>
+            <div class="number">{{ total }}</div>
+        </div>
+        <div class="stat-card fake">
+            <h3>Fraudulent</h3>
+            <div class="number">{{ fake }}</div>
+        </div>
+        <div class="stat-card real">
+            <h3>Legitimate</h3>
+            <div class="number">{{ real }}</div>
+        </div>
+        <div class="stat-card rate">
+            <h3>Fraud Rate</h3>
+            <div class="number">{% widthratio fake total 100 %}%</div>
         </div>
     </div>
 
-    <!-- Row 2: Advanced Insights -->
-    <div class="chart-card">
-        <h3>🎯 Detection Accuracy Gauge</h3>
-        <div class="chart-container">
-            <canvas id="gaugeChart"></canvas>
+    <!-- Main Content: Charts + Insights -->
+    <div class="main-content">
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3> Analysis Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3> Detection Stats</h3>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3> Fraud Detection Rate</h3>
+                <div class="chart-container">
+                    <canvas id="gaugeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3> Your Impact Score</h3>
+                <div class="chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <div class="insights-section">
+            <div class="insight-card">
+                <h4> Protection Score</h4>
+                <div class="value">{{ total }}</div>
+                <p>Jobs verified for fraud</p>
+            </div>
+
+            <div class="insight-card" style="border-left-color: {% if fake > real %}#ef4444{% else %}#10b981{% endif %}">
+                <h4> Detection Result</h4>
+                <div class="value" style="color: {% if fake > real %}#ef4444{% else %}#10b981{% endif %}">{% widthratio fake total 100 %}%</div>
+                <p>
+                    {% if fake > real %}
+                    High fraud encountered - stay vigilant!
+                    {% elif fake == 0 %}
+                    All jobs legitimate - great!
+                    {% else %}
+                    Successfully detecting fraud
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="insight-card" style="border-left-color: #10b981;">
+                <h4> Community Impact</h4>
+                <div class="value" style="color: #10b981;">Active</div>
+                <p>Contributing to platform intelligence</p>
+            </div>
+
+            <div class="insight-card" style="border-left-color: #f59e0b;">
+                <h4>Analysis Activity</h4>
+                <div class="value" style="color: #f59e0b;">
+                    {% if total > 20 %}High{% elif total > 10 %}Moderate{% else %}Growing{% endif %}
+                </div>
+                <p>Your engagement level</p>
+            </div>
         </div>
     </div>
 
-    <div class="chart-card">
-        <h3>⭐ Your Impact Score</h3>
-        <div class="chart-container">
-            <canvas id="radarChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Row 3: Probability Distribution -->
-    <div class="chart-card full-width">
-        <h3>📉 Your Fraud Probability Distribution</h3>
-        <div class="chart-container medium">
-            <canvas id="lineChart"></canvas>
-        </div>
-    </div>
+    {% endif %}
 </div>
-
-<div class="summary-cards">
-    <div class="summary-card">
-        <h4>🛡️ Protection Score</h4>
-        <p class="highlight">{{ total }} jobs verified</p>
-        <p>You've contributed to making job searching safer by analyzing {{ total }} posting{{ total|pluralize }}.</p>
-    </div>
-
-    <div class="summary-card">
-        <h4>🎯 Detection Rate</h4>
-        <p class="highlight">{% widthratio fake total 100 %}% fraud detected</p>
-        <p>
-            {% if fake > real %}
-            You're encountering high fraud rates. Stay vigilant!
-            {% elif fake == 0 %}
-            Great! All your analyzed jobs are legitimate.
-            {% else %}
-            You're successfully identifying fraud while finding legitimate opportunities.
-            {% endif %}
-        </p>
-    </div>
-
-    <div class="summary-card">
-        <h4>💪 Your Contribution</h4>
-        <p class="highlight">Community Member</p>
-        <p>Your analyses help build the platform's fraud detection intelligence, protecting other job seekers.</p>
-    </div>
-</div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -272,12 +291,12 @@
         warning: '#f59e0b'
     };
 
-    // Chart 1: Pie Chart
+    // Pie Chart
     const pieCtx = document.getElementById('pieChart').getContext('2d');
     const pieChart = new Chart(pieCtx, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
-            labels: ['Legitimate Jobs', 'Fraudulent Jobs'],
+            labels: ['Legitimate', 'Fraudulent'],
             datasets: [{
                 data: [{{ real }}, {{ fake }}],
                 backgroundColor: [colors.legitimate, colors.fraudulent],
@@ -292,8 +311,8 @@
                 legend: {
                     position: 'bottom',
                     labels: {
-                        padding: 15,
-                        font: { size: 12 },
+                        padding: 8,
+                        font: { size: 10 },
                         color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
                     }
                 }
@@ -301,31 +320,28 @@
         }
     });
 
-    // Chart 2: Bar Chart
+    // Bar Chart
     const barCtx = document.getElementById('barChart').getContext('2d');
     const barChart = new Chart(barCtx, {
         type: 'bar',
         data: {
-            labels: ['Total', 'Legitimate', 'Fraudulent'],
+            labels: ['Total', 'Legit', 'Fraud'],
             datasets: [{
-                label: 'Job Count',
                 data: [{{ total }}, {{ real }}, {{ fake }}],
                 backgroundColor: [colors.primary, colors.legitimate, colors.fraudulent],
-                borderWidth: 0,
-                borderRadius: 8
+                borderRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
                 y: {
                     beginAtZero: true,
                     ticks: {
                         stepSize: 1,
+                        font: { size: 9 },
                         color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
                     },
                     grid: {
@@ -334,28 +350,26 @@
                 },
                 x: {
                     ticks: {
+                        font: { size: 9 },
                         color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
                     },
-                    grid: {
-                        display: false
-                    }
+                    grid: { display: false }
                 }
             }
         }
     });
 
-    // Chart 3: Gauge Chart (Doughnut with custom center text)
+    // Gauge Chart
     const fraudRate = Math.round(({{ fake }} / {{ total }}) * 100);
     const gaugeCtx = document.getElementById('gaugeChart').getContext('2d');
     const gaugeChart = new Chart(gaugeCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Fraud Rate', 'Safety Rate'],
             datasets: [{
                 data: [fraudRate, 100 - fraudRate],
                 backgroundColor: [
                     fraudRate > 50 ? colors.fraudulent : fraudRate > 30 ? colors.warning : colors.legitimate,
-                    'rgba(200, 200, 200, 0.2)'
+                    'rgba(200, 200, 200, 0.1)'
                 ],
                 borderWidth: 0
             }]
@@ -365,82 +379,59 @@
             maintainAspectRatio: false,
             rotation: -90,
             circumference: 180,
-            cutout: '75%',
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.parsed + '%';
-                        }
-                    }
-                }
-            }
+            cutout: '70%',
+            plugins: { legend: { display: false } }
         },
         plugins: [{
-            id: 'gaugeText',
             afterDraw: function(chart) {
                 const ctx = chart.ctx;
                 const width = chart.width;
                 const height = chart.height;
                 
-                ctx.restore();
-                ctx.font = 'bold 32px sans-serif';
+                ctx.font = 'bold 24px sans-serif';
                 ctx.textBaseline = 'middle';
                 ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
                 
                 const text = fraudRate + '%';
                 const textX = Math.round((width - ctx.measureText(text).width) / 2);
-                const textY = height / 1.6;
+                ctx.fillText(text, textX, height / 1.6);
                 
-                ctx.fillText(text, textX, textY);
-                
-                ctx.font = '12px sans-serif';
+                ctx.font = '9px sans-serif';
                 ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary');
                 const label = 'Fraud Rate';
                 const labelX = Math.round((width - ctx.measureText(label).width) / 2);
-                ctx.fillText(label, labelX, textY + 25);
-                
-                ctx.save();
+                ctx.fillText(label, labelX, height / 1.6 + 18);
             }
         }]
     });
 
-    // Chart 4: Radar Chart - Impact Score
+    // Radar Chart
     const radarCtx = document.getElementById('radarChart').getContext('2d');
     const radarChart = new Chart(radarCtx, {
         type: 'radar',
         data: {
-            labels: ['Accuracy', 'Activity', 'Vigilance', 'Contribution', 'Learning'],
+            labels: ['Accuracy', 'Activity', 'Vigilance', 'Learning'],
             datasets: [{
-                label: 'Your Score',
+                label: 'Score',
                 data: [
                     Math.min(100, 60 + ({{ total }} * 5)),
                     Math.min(100, {{ total }} * 8),
                     Math.min(100, {{ fake }} > 0 ? 80 : 60),
-                    Math.min(100, {{ total }} * 6),
                     Math.min(100, 50 + ({{ total }} * 4))
                 ],
-                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                backgroundColor: 'rgba(102, 126, 234, 0.15)',
                 borderColor: colors.primary,
                 borderWidth: 2,
                 pointBackgroundColor: colors.primary,
                 pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: colors.primary
+                pointRadius: 3
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        font: { size: 11 },
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
-                    }
-                }
+                legend: { display: false }
             },
             scales: {
                 r: {
@@ -448,6 +439,7 @@
                     max: 100,
                     ticks: {
                         stepSize: 25,
+                        font: { size: 8 },
                         color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary'),
                         backdropColor: 'transparent'
                     },
@@ -455,116 +447,40 @@
                         color: getComputedStyle(document.documentElement).getPropertyValue('--border-color')
                     },
                     pointLabels: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary'),
-                        font: { size: 11 }
-                    }
-                }
-            }
-        }
-    });
-
-    // Chart 5: Line Chart - Probability Simulation
-    const lineCtx = document.getElementById('lineChart').getContext('2d');
-    const lineChart = new Chart(lineCtx, {
-        type: 'line',
-        data: {
-            labels: Array.from({length: {{ total }}}, (_, i) => i + 1),
-            datasets: [{
-                label: 'Fraud Probability Trend',
-                data: Array.from({length: {{ total }}}, () => Math.random()),
-                borderColor: colors.primary,
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 3,
-                pointHoverRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
+                        font: { size: 9 },
                         color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
                     }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 1,
-                    title: {
-                        display: true,
-                        text: 'Probability Score',
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
-                    },
-                    ticks: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
-                    },
-                    grid: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--border-color')
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Analysis Number',
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
-                    },
-                    ticks: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
-                    },
-                    grid: {
-                        display: false
-                    }
-                }
             }
         }
     });
 
-    // Update chart colors when theme changes
+    // Update colors on theme change
     function updateChartColors() {
         const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card');
         const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
         const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary');
         const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
         
-        // Update all charts
-        [pieChart, gaugeChart].forEach(chart => {
+        [pieChart].forEach(chart => {
             chart.data.datasets[0].borderColor = borderColor;
-            if (chart.options.plugins.legend.labels) {
-                chart.options.plugins.legend.labels.color = textColor;
-            }
+            chart.options.plugins.legend.labels.color = textColor;
             chart.update();
         });
-
-        [barChart, lineChart].forEach(chart => {
-            chart.options.scales.y.ticks.color = secondaryColor;
-            chart.options.scales.x.ticks.color = secondaryColor;
-            chart.options.scales.y.grid.color = gridColor;
-            if (chart.options.scales.y.title) {
-                chart.options.scales.y.title.color = secondaryColor;
-            }
-            if (chart.options.scales.x.title) {
-                chart.options.scales.x.title.color = secondaryColor;
-            }
-            if (chart.options.plugins.legend.labels) {
-                chart.options.plugins.legend.labels.color = textColor;
-            }
-            chart.update();
-        });
-
-        radarChart.options.plugins.legend.labels.color = textColor;
+        
+        barChart.options.scales.y.ticks.color = secondaryColor;
+        barChart.options.scales.x.ticks.color = secondaryColor;
+        barChart.options.scales.y.grid.color = gridColor;
+        barChart.update();
+        
         radarChart.options.scales.r.ticks.color = secondaryColor;
         radarChart.options.scales.r.grid.color = gridColor;
         radarChart.options.scales.r.pointLabels.color = textColor;
         radarChart.update();
+        
+        gaugeChart.update();
     }
 
-    // Listen for theme changes
     const observer = new MutationObserver(updateChartColors);
     observer.observe(document.documentElement, {
         attributes: true,
